@@ -13,9 +13,13 @@
 \usepackage{mathptmx} % assumes new font selection scheme installed
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows, positioning, bending}
+
+\usepackage{hyperref}
 
 
 \usepackage{todonotes}
@@ -182,44 +186,188 @@ trial-and-error learners—viewed as almost the opposite of planning~\cite{sutto
 
 \todo{}
 
-\subsection{Tabular Soltion Methods}
+\subsection{Monte Carlo}
 
-That in which the state and action spaces are small enough for the approximate value functions to be represented as arrays, or tables. In this case, the methods can often findexact solutions, that is, they can often find exactly the optimal value function and the optimal policy. This contrasts with the approximate methods described in the next section, which only find approximate solutions, but which in return can be applied effectively to much larger problems.
+Recall that the value of a state is the expected return —expected cumulative future discounted reward— starting from that state. An obvious way to estimate it from experience, then, is simply to average the returns observed after visits to that state. As more returns are observed, the average should converge to the expected value. This idea underlies all Monte Carlo methods.
 
-\subsubsection{Q-Learning}
+In particular, suppose we wish to estimate $v_\pi$(s), the value of a
+states under policy $\pi$, given a set of episodes obtained by
+following $\pi$ and passing through $s$. Each occurrence of states in an
+episode is called a visit to $s$. Of course, $s$ may be visited multiple
+times in the same episode; let us call the first time it is visited in
+an episode the first visit $t$ o $s$. The first-visit MC method estimates
+$v_\pi(s)$ as the average of the returns following first visits $t$ o $s$,
+whereas the every-visit MC method averages the returns following all
+visits $t$ o $s$.
 
-~\cite{watkins1989learning}
 
-Q-learning is a model-free reinforcement learning algorithm to learn a policy telling an agent what action to take under what circumstances. It does not require a model (hence the connotation "model-free") of the environment, and it can handle problems with stochastic transitions and rewards, without requiring adaptations.
+\begin{algorithm}
+\caption{First-visit MC prediction for estimating $V \approx v_{\pi}$}
+\begin{algorithmic}[1]
+
+  \State Initialize:
+  \State $\pi \leftarrow$ policy to be evalueted
+  \State $V \leftarrow$ an arbitrary state-value function
+  \State $Returns \leftarrow$ an empty list, for all $s \in \mathit{S}$
+
+  \While{True}
+  \State Generate an episode using $\pi$
+
+  \For{each state $s$ in the episode}
+
+  \State $G \leftarrow$ the return that follows the first occurange of s
+  \State Append G to $Returns(s)$
+  \State $V(s) \leftarrow average(Returns(s))$
+    \EndFor
+    \EndWhile
+
+\end{algorithmic}
+\end{algorithm}
+
+Conforme la cantidad de visitas incrementa la funcion $V$ converge hacia $v_\pi(s)$;
+
+\subsection{Q-Learning}
+
 
 $$
-Q(S_t,A_t)\leftarrow Q(S_t,A_t) +\alpha\left[R_{t+1}+ \underset{a}{max}Q(S_{t+1},a)-Q(S_t,A_t) \right]
+Q (S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \underset{a}{max} Q(S_{t+1}, a) - Q(S_t, A_t) \right]
 $$
 
-In this case, the learned action-value function, $Q$, directly
-approximates $q_*$, the optimal action-value function, independent of
-the policy being followed. This dramatically simplifies the analysis
-of the algorithm and enabled early convergence proofs. The policy
-still has an effect in that it determines which state–action pairs are
-visited and updated. However, all that is required for correct
-convergence is that all pairs continue to be updated. Under this
-assumption and a variant of the usual stochastic approximation
-conditions on the sequence of step-size parameters, $Q$ has been shown
-to converge with probability $1$ to $q_*$.
-
-\subsubsection{Deep Q-Learning}
+The learned action-value function $Q$ directly approximates $q_*$
+which is the optimal action-value function~\cite{sutton2018reinforcement}.
 
 
+\begin{algorithm}
+\caption{Q-learning for estimating $\pi \approx \pi_*$}
+\begin{algorithmic}[1]
+    \State Initialize $Q(s, a)$, for all $s \in \mathit{S}$, $a \in \mathit{A}(s)$, randomly and $Q(terminal\-state, \cdot)=0$
+    \If{Remaining Episodes}
+    \State Initialize $S$
+    \If{Remaining Steps}
+    \State Choose $A$ from $S$ using policy derived from $Q$
+    \State Take action $A$, observe $R, S'$
+    \State $Q (S, A) \leftarrow Q(S, A) + \alpha \left[ R + \gamma \underset{a}{max} Q(S', a) - Q(S, A) \right]$
+    \State $S \leftarrow S'$
+    \EndIf
+    \EndIf
+\end{algorithmic}
+\end{algorithm}
 
-\subsubsection{DDPG}
 
-\subsubsection{TRPO}
+\subsection{Deep Q-Learning}
 
-\subsubsection{PPO}
+
+This is an extension of Q-Learning, that combines it with artificial neural networks. Minh et al showed in \cite{minh_dqn} how a single reinforcement learning agent can achieve high levels of performance in many different problems without relying on different problem-specific feature setes.
+
+Mnih et al. modified the basic Q-learning procedure in three ways. First, they used a method called experience replay. This method stores the agent’s experience at each timestep in a replay memory that is accessed to perform the weight updates. After the game emulator executed action $A_t$ in a state represented by the image stack $S_t$, and returned reward $R_{t+1}$ and image stack $S_{t+1}$, it added the tuple ($S_t$,$A_t$,$R_{t+1}$,$S_{t+1}$) to the replay memory. This memory accumulated experiences over many plays of the same game. At each time step multiple Q-learning updates—a mini-batch—were performed based on experiences sampled uniformly at random from the replay memory. Instead of $S_{t+1}$ becoming the new $S_t$ for the next update as it would in the usual form of Q-learning, a new unconnected experience was drawn from the replay memory to supply data for the next update. Since Q-learning is an off-policy algorithm, it does not need to be applied along connected trajectories.
+
+Mnih et al. used a technique that brought Q-learning closer to the simpler supervised-learning case while still allowing it to bootstrap. Whenever a certain number, $C$, of updates had been done to the weights $w$ of the action-value network, they inserted the network’s current weights into another network and held these duplicate weights fixed for the next $C$ updates of $w$. The outputs of this duplicate network over the next $C$ updates of $w$ were used as the Q-learning targets. Letting $\tilde{q}$ denote the output of this duplicate network, then instead of (16.3) the update rule was:
+
+$$
+w_{t+1}=w_t+\alpha[R_{t+1}+\gamma \underset{a}{max} \tilde{q}(S_{t+1},a,w_t)-\hat{q}(S_t,A_t,w_t)]\nabla_{w_t}\hat{q}(S_t,A_t,w_t).
+$$
+
+A final modification of standard Q-learning was also found to improve stability. They clipped the error term $R_{t+1}+\gamma \underset{a}{max} \tilde{q}\left(S_{t+1},a,w_t\right)-\hat{q}\left(S_t,A_t,w_t\right)$ so that it remained in the interval $\left[-1,1\right]$.
+
+\subsection{Actor-Critics}
+
+The principal idea is to split the model in two: one for computing an
+action based on a state and another one to produce the $Q$ values of the
+action.
+
+The actor takes as input the state and outputs the best action. It
+essentially controls how the agent behaves by learning the optimal
+policy. The critic, on the other hand, evaluates the action by
+computing the value function. Those two models participate in a game
+where they both get better in their own role as the time passes. The
+result is that the overall architecture will learn to play to solve
+the problem more efficiently than the two methods separately.
 
 
 \section{Which library or frameworks are the most relevant today?}
 \todo{Add library and frameworks}
+
+https://medium.com/data-from-the-trenches/choosing-a-deep-reinforcement-learning-library-890fb0307092
+
+
+\subsection{KerasRL}
+
+keras-rl\cite{plappert2016kerasrl} implements some state-of-the art deep reinforcement learning
+algorithms in Python and seamlessly integrates with the deep learning
+library Keras.
+
+Furthermore, keras-rl works with OpenAI Gym out of the box. This means
+that evaluating and playing around with different algorithms is easy.
+
+Implements the following algorithms:
+
+\begin{itemize}
+\item Deep Q Learning
+\item Double DQN
+\item Deep Determenistic Policy Gradient
+\item Continous DQN
+\item Cross-Entropy Method
+\item Dueling Network DQN
+  \item Deep SARSA
+\end{itemize}
+
+\subsection{Tensorforce}
+
+Tensorforce~\cite{tensorforce} is an open-source deep reinforcement
+learning framework, with an emphasis on modularized flexible library
+design and straightforward usability for applications in research and
+practice. Tensorforce is built on top of Google's TensorFlow framework
+and requires Python 3.
+
+
+\begin{itemize}
+\item Proximal Policy Optimization
+\item Trust-Region Policy Optimization
+\item Deterministic Policy Gradient
+\item Deep Q-Network
+\item Double DQN
+\item Dueling DQN
+\item Actor-Critic
+\item Advantage Actor-Critic
+\end{itemize}
+
+\subsection{Stable Baselines}
+
+Stable Baselines~\cite{stable-baselines}, a set of implementations of
+Reinforcement Learning (RL) algorithms with a common interface, based
+on OpenAI Baselines. It is focused on simplicity of use and
+consistency.
+
+\begin{itemize}
+\item Advantage Actor Critic
+\item Actor Critic with Experience Replay
+\item Actor Critic using Kronecker Factored Trust Region
+\item Deep Determenistic Policy Gradient
+\item Deep Q Learning
+\item Generative Adversarial Imitation Learning
+\item Hindsight Experience Relay
+\item Proximal Policy Optimization
+\item Soft Actor Critic
+\item Twin Delayed DDPG
+\item Trust Region Policy Optimization
+\end{itemize}
+
+\subsection{TF Agents}
+
+TF-Agents~\cite{TFAgents} is a relatively new but up-and-coming tool, again, from
+Google.  TF-Agents, while newer, is typically seen as more robust and
+mature. It is a framework designed for notebooks and that makes it
+perfect for trying out various configurations, hyperparameters, or
+environments. 
+
+\begin{itemize}
+\item Deep Q Learning
+\item Double DQN
+\item Twin Delayed DDPG
+\item REINFORCE
+\item Proximal Policy Optimization
+\item Soft Actor Critic
+\end{itemize}
 
 \section{What challenges are there?}
 
