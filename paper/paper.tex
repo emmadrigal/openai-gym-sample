@@ -23,18 +23,21 @@
 
 
 \usepackage{todonotes}
+\def\tec{$^1$}
 
-\title{\LARGE \bf
-An Overview of reinforcement learning
-}
+\title{\LARGE \bf An Overview of Reinforcement Learning}
 
-\author{Emmanuel Madrigal% <-this % stops a space
+\author{
+  Emmanuel Madrigal \\
+  \vspace{3pt}
+  emmadrigal@estudiantec.cr
+  \vspace{-18pt}
 }
 
 
 \begin{document}
 
-\maketitle\todo{Fix title}
+\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
@@ -78,29 +81,6 @@ instead of trying to find hidden structure. Uncovering structure in an
 agent’s experience can be useful in reinforcement learning, but by
 itself does not address the reinforcement learning problem of
 maximizing a reward signal~\cite{sutton2018reinforcement}.
-
-\begin{figure}
-	\begin{tikzpicture}[node distance=1cm]
-		\node (agent) [rectangle,
-			minimum width=2cm,
-			minimum height=1cm,
-			text centered,
-			draw=black] {Agent};
-
-		\node (env) [rectangle,
-			minimum width=2cm,
-			minimum height=1cm,
-			text centered,
-			draw=black,
-			below = of agent] {Enviroment};
-
-		\draw[bend left=90,->]  (agent.east) to node [auto] {action} (env.east);
-
-		\draw[bend right=90,<-]  (agent.200) to node [auto, below=0.5em, sloped, anchor=center] {reward} (env.160);
-		\draw[bend right=90,<-]  (agent.155) to node [auto, below=0.5em, sloped, anchor=center] {state} (env.205);
-	\end{tikzpicture}
-	\caption{Machine learning system}
-\end{figure}
 
 \section{What are its principles?} % Cuales son sus principios
 
@@ -274,7 +254,7 @@ which is the optimal action-value function~\cite{sutton2018reinforcement}.
 	\end{algorithmic}
 \end{algorithm}
 
-\subsection{Deep Q-Learning}
+\subsection{Deep Q-Learning~\cite{minh_dqn}}
 
 This is an extension of Q-Learning, that combines it with artificial
 neural networks. Minh et al showed in \cite{minh_dqn} how a single
@@ -314,11 +294,11 @@ $$
 
 A final modification of standard Q-learning was also found to improve stability. They clipped the error term $R_{t+1}+\gamma \underset{a}{max} \tilde{q}\left(S_{t+1},a,w_t\right)-\hat{q}\left(S_t,A_t,w_t\right)$ so that it remained in the interval $\left[-1,1\right]$.
 
-\subsection{Actor-Critics}
+\subsection{Actor Critic~\cite{konda2000actor}}
 
-The principal idea is to split the deep q-learning model in two: one for computing an
-action based on a state and another one to produce the $Q$ values of the
-action.
+The principal idea is to split the deep q-learning model in two: one
+for computing an action based on a state and another one to produce
+the $Q$ values of the action.
 
 The actor takes as input the state and outputs the best action. It
 essentially controls how the agent behaves by learning the optimal
@@ -328,7 +308,89 @@ where they both get better in their own role as the time passes. The
 result is that the overall architecture will learn to play to solve
 the problem more efficiently than the two methods separately.
 
-\subsection{REINFORCE}
+The Actor Critic has two main variants: the Asynchronous Advantage
+Actor Critic (A3C) and the Advantage Actor Critic (A2C).
+
+A3C was introduced in ~\cite{mnih2016asynchronous}. In essence, A3C
+implements parallel training where multiple workers in parallel
+environments independently update a global value function—hence
+``asynchronous''. One key benefit of having asynchronous actors is
+effective and efficient exploration of the state space.
+
+A2C~\cite{wu_2017} is like A3C but without the asynchronous part; this
+means a single-worker variant of the A3C. It was empirically found
+that A2C produces comparable performance to A3C while being more
+efficient.
+
+\subsection{Double DQN~\cite{NIPS2010_3964}}
+
+Taking the largest q value (which is noisy) as the best action to take
+can lead to false positives. If non-optimal actions are regularly
+given a higher Q value than the optimal best action, the learning will
+be complicated.  The solution is: when we compute the Q target; we use
+two networks to decouple the action choice from the target Q value
+generation.
+
+\begin{itemize}
+\item Use a DQN network to select what is the best action to take for
+  the next state (the action with the highest Q value).
+\item Use a target network to calculate the target Q value of taking
+  that action at the next state.
+\end{itemize}
+
+\subsection{Deep Deterministic Policy Gradient~\cite{lillicrap2015continuous}}
+
+Deep Deterministic Policy Gradient (DDPG) is an algorithm which
+concurrently learns a Q-function and a policy. It uses off-policy data
+and the Bellman equation to learn the Q-function, and uses the
+Q-function to learn the policy.
+
+This approach is closely connected to Q-learning, and is motivated the same way: if you know the optimal action-value function $Q^*(s,a)$, then in any given state, the optimal action $a^*(s)$ can be found by solving
+
+$$
+a^*(s) = \underset{a}{arg\ max} Q^*(s,a).
+$$
+
+DDPG interleaves learning an approximator to $Q^*(s,a)$ with learning an
+approximator to $a^*(s)$, and it does so in a way which is specifically
+adapted for environments with continuous action spaces.
+
+Because the action space is continuous, the function $Q^*(s,a)$ is
+presumed to be differentiable with respect to the action
+argument. This allows to set up an efficient, gradient-based learning
+rule for a policy $\mu(s)$ which exploits that fact. Then, instead of
+running an expensive optimization subroutine each time we wish to
+compute $max_a Q(s,a)$, we can approximate it with $\max_a Q(s,a)
+\approx Q(s,\mu(s))$.
+
+
+\subsection{SARSA~\cite{rummery1994line}}
+
+The Sarsa algorithm is an On-Policy algorithm for reinforcement learning. The
+major difference between it and Q-Learning, is that the maximum reward
+for the next state is not necessarily used for updating the
+Q-values. Instead, a new action, and therefore reward, is selected
+using the same policy that determined the original action. The name
+Sarsa actually comes from the fact that the updates are done using the
+quintuple $Q(s, a, r, s', a')$. Where: $s, a$ are the original state and
+action, $r$ is the reward observed in the following state and $s', a'$ are
+the new state-action pair.
+
+\subsection{Other}
+
+Other algorithms include:
+
+\begin{itemize}
+\item Proximal Policy Optimization~\cite{schulman2017proximal}.
+  \item Trust-Region Policy Optimization~\cite{schulman2015trust}.
+  \item Deterministic Policy Gradient~\cite{silver2014deterministic}.
+  \item Generative Adversarial Imitation Learning~\cite{ho2016generative}.
+  \item Hindsight Experience Relay~\cite{AndrychowiczWRS17}.
+  \item Soft Actor Critic~\cite{abs-1801-01290}.
+  \item Twin Delayed DDPG~\cite{dankwa2019twin}.
+  \item Trust Region Policy Optimization~\cite{schulman2015trust}.
+\end{itemize}
+
 
 \section{Which library or frameworks are the most relevant today?}
 
@@ -670,7 +732,7 @@ programs. In the model, the adversarially trained agent used the
 signal as rewards to improve the actions, instead of propagating the
 gradients to the input space as in the GAN training.
 
-\addtolength{\textheight}{-12.5cm}   % This command serves to balance the column lengths
+\addtolength{\textheight}{-9.5cm}   % This command serves to balance the column lengths
 % on the last page of the document manually. It shortens
 % the textheight of the last page by a suitable amount.
 % This command does not take effect until the next page
