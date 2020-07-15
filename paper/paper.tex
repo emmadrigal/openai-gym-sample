@@ -38,12 +38,12 @@ An Overview of reinforcement learning
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-  This document provides an overview of reinforcement learning, this
-  is a machine learning technique which deals with the optimization of
-  a reward function when the algorithm can only interact with an
-  intermediary enviroment. Some general algorithms are shown and the
-  most relevant frameworks are discussed. Its current challenges and
-  some use cases are also presented.
+	This document provides an overview of reinforcement learning, this
+	is a machine learning technique which deals with the optimization of
+	a reward function when the algorithm can only interact with an
+	intermediary enviroment. Some general algorithms are shown and the
+	most relevant frameworks are discussed. Its current challenges and
+	some use cases are also presented.
 \end{abstract}
 
 \section{What is it?}
@@ -80,51 +80,51 @@ itself does not address the reinforcement learning problem of
 maximizing a reward signal~\cite{sutton2018reinforcement}.
 
 \begin{figure}
-\begin{tikzpicture}[node distance=1cm]
-  \node (agent) [rectangle,
-    minimum width=2cm,
-    minimum height=1cm,
-    text centered,
-    draw=black] {Agent};
-  
-  \node (env) [rectangle,
-    minimum width=2cm,
-    minimum height=1cm,
-    text centered,
-    draw=black,
-  below = of agent] {Enviroment};
+	\begin{tikzpicture}[node distance=1cm]
+		\node (agent) [rectangle,
+			minimum width=2cm,
+			minimum height=1cm,
+			text centered,
+			draw=black] {Agent};
 
-  \draw[bend left=90,->]  (agent.east) to node [auto] {action} (env.east);
-  
-  \draw[bend right=90,<-]  (agent.200) to node [auto, below=0.5em, sloped, anchor=center] {reward} (env.160);
-  \draw[bend right=90,<-]  (agent.155) to node [auto, below=0.5em, sloped, anchor=center] {state} (env.205);  
-\end{tikzpicture}
-\caption{Machine learning system}
+		\node (env) [rectangle,
+			minimum width=2cm,
+			minimum height=1cm,
+			text centered,
+			draw=black,
+			below = of agent] {Enviroment};
+
+		\draw[bend left=90,->]  (agent.east) to node [auto] {action} (env.east);
+
+		\draw[bend right=90,<-]  (agent.200) to node [auto, below=0.5em, sloped, anchor=center] {reward} (env.160);
+		\draw[bend right=90,<-]  (agent.155) to node [auto, below=0.5em, sloped, anchor=center] {state} (env.205);
+	\end{tikzpicture}
+	\caption{Machine learning system}
 \end{figure}
 
 \section{What are its principles?} % Cuales son sus principios
 
 \begin{figure}
-\begin{tikzpicture}[node distance=1cm]
-  \node (agent) [rectangle,
-    minimum width=2cm,
-    minimum height=1cm,
-    text centered,
-    draw=black] {Agent};
-  
-  \node (env) [rectangle,
-    minimum width=2cm,
-    minimum height=1cm,
-    text centered,
-    draw=black,
-  below = of agent] {Enviroment};
+	\begin{tikzpicture}[node distance=1cm]
+		\node (agent) [rectangle,
+			minimum width=2cm,
+			minimum height=1cm,
+			text centered,
+			draw=black] {Agent};
 
-  \draw[bend left=90,->]  (agent.east) to node [auto] {action} (env.east);
-  
-  \draw[bend right=90,<-]  (agent.200) to node [auto, below=0.5em, sloped, anchor=center] {reward} (env.160);
-  \draw[bend right=90,<-]  (agent.155) to node [auto, below=0.5em, sloped, anchor=center] {state} (env.205);  
-\end{tikzpicture}
-\caption{Machine learning system}
+		\node (env) [rectangle,
+			minimum width=2cm,
+			minimum height=1cm,
+			text centered,
+			draw=black,
+			below = of agent] {Enviroment};
+
+		\draw[bend left=90,->]  (agent.east) to node [auto] {action} (env.east);
+
+		\draw[bend right=90,<-]  (agent.200) to node [auto, below=0.5em, sloped, anchor=center] {reward} (env.160);
+		\draw[bend right=90,<-]  (agent.155) to node [auto, below=0.5em, sloped, anchor=center] {state} (env.205);
+	\end{tikzpicture}
+	\caption{Machine learning system}
 \end{figure}
 
 \subsection{Agent and Enviroment}
@@ -224,60 +224,55 @@ $v_\pi(s)$ as the average of the returns following first visits $t$ o $s$,
 whereas the every-visit MC method averages the returns following all
 visits $t$ o $s$.
 
-
 \begin{algorithm}
-\caption{First-visit MC prediction for estimating $V \approx v_{\pi}$}
-\begin{algorithmic}[1]
+	\caption{First-visit MC prediction for estimating $V \approx v_{\pi}$}
+	\begin{algorithmic}[1]
 
-  \State Initialize:
-  \State $\pi \leftarrow$ policy to be evalueted
-  \State $V \leftarrow$ an arbitrary state-value function
-  \State $Returns \leftarrow$ an empty list, for all $s \in \mathit{S}$
+		\State Initialize:
+		\State $\pi \leftarrow$ policy to be evalueted
+		\State $V \leftarrow$ an arbitrary state-value function
+		\State $Returns \leftarrow$ an empty list, for all $s \in \mathit{S}$
 
-  \While{True}
-  \State Generate an episode using $\pi$
+		\While{True}
+		\State Generate an episode using $\pi$
 
-  \For{each state $s$ in the episode}
+		\For{each state $s$ in the episode}
 
-  \State $G \leftarrow$ the return that follows the first occurange of s
-  \State Append G to $Returns(s)$
-  \State $V(s) \leftarrow average(Returns(s))$
-    \EndFor
-    \EndWhile
+		\State $G \leftarrow$ the return that follows the first occurange of s
+		\State Append G to $Returns(s)$
+		\State $V(s) \leftarrow average(Returns(s))$
+		\EndFor
+		\EndWhile
 
-\end{algorithmic}
+	\end{algorithmic}
 \end{algorithm}
-
 
 As the number of visits increases, the function $V$ converges to $v_\pi(s)$;
 
 \subsection{Q-Learning}
 
-
 $$
-Q (S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \underset{a}{max} Q(S_{t+1}, a) - Q(S_t, A_t) \right]
+	Q (S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \underset{a}{max} Q(S_{t+1}, a) - Q(S_t, A_t) \right]
 $$
 
 The learned action-value function $Q$ directly approximates $q_*$
 which is the optimal action-value function~\cite{sutton2018reinforcement}.
 
-
 \begin{algorithm}
-\caption{Q-learning for estimating $\pi \approx \pi_*$}
-\begin{algorithmic}[1]
-    \State Initialize $Q(s, a)$, for all $s \in \mathit{S}$, $a \in \mathit{A}(s)$, randomly and $Q(terminal\-state, \cdot)=0$
-    \If{Remaining Episodes}
-    \State Initialize $S$
-    \If{Remaining Steps}
-    \State Choose $A$ from $S$ using policy derived from $Q$
-    \State Take action $A$, observe $R, S'$
-    \State $Q (S, A) \leftarrow Q(S, A) + \alpha \left[ R + \gamma \underset{a}{max} Q(S', a) - Q(S, A) \right]$
-    \State $S \leftarrow S'$
-    \EndIf
-    \EndIf
-\end{algorithmic}
+	\caption{Q-learning for estimating $\pi \approx \pi_*$}
+	\begin{algorithmic}[1]
+		\State Initialize $Q(s, a)$, for all $s \in \mathit{S}$, $a \in \mathit{A}(s)$, randomly and $Q(terminal\-state, \cdot)=0$
+		\If{Remaining Episodes}
+		\State Initialize $S$
+		\If{Remaining Steps}
+		\State Choose $A$ from $S$ using policy derived from $Q$
+		\State Take action $A$, observe $R, S'$
+		\State $Q (S, A) \leftarrow Q(S, A) + \alpha \left[ R + \gamma \underset{a}{max} Q(S', a) - Q(S, A) \right]$
+		\State $S \leftarrow S'$
+		\EndIf
+		\EndIf
+	\end{algorithmic}
 \end{algorithm}
-
 
 \subsection{Deep Q-Learning}
 
@@ -314,7 +309,7 @@ as the Q-learning targets. Letting $\tilde{q}$ denote the output of
 this duplicate network, then instead of (16.3) the update rule was:
 
 $$
-w_{t+1}=w_t+\alpha[R_{t+1}+\gamma \underset{a}{max} \tilde{q}(S_{t+1},a,w_t)-\hat{q}(S_t,A_t,w_t)]\nabla_{w_t}\hat{q}(S_t,A_t,w_t).
+	w_{t+1}=w_t+\alpha[R_{t+1}+\gamma \underset{a}{max} \tilde{q}(S_{t+1},a,w_t)-\hat{q}(S_t,A_t,w_t)]\nabla_{w_t}\hat{q}(S_t,A_t,w_t).
 $$
 
 A final modification of standard Q-learning was also found to improve stability. They clipped the error term $R_{t+1}+\gamma \underset{a}{max} \tilde{q}\left(S_{t+1},a,w_t\right)-\hat{q}\left(S_t,A_t,w_t\right)$ so that it remained in the interval $\left[-1,1\right]$.
@@ -333,6 +328,8 @@ where they both get better in their own role as the time passes. The
 result is that the overall architecture will learn to play to solve
 the problem more efficiently than the two methods separately.
 
+\subsection{REINFORCE}
+
 \section{Which library or frameworks are the most relevant today?}
 
 \subsection{KerasRL}
@@ -347,13 +344,13 @@ that evaluating and playing around with different algorithms is easy.
 Implements the following algorithms:
 
 \begin{itemize}
-\item Deep Q Learning
-\item Double DQN
-\item Deep Determenistic Policy Gradient
-\item Continous DQN
-\item Cross-Entropy Method
-\item Dueling Network DQN
-  \item Deep SARSA
+	\item Deep Q Learning
+	\item Double DQN
+	\item Deep Determenistic Policy Gradient
+	\item Continous DQN
+	\item Cross-Entropy Method
+	\item Dueling Network DQN
+	\item Deep SARSA
 \end{itemize}
 
 \subsection{Tensorforce}
@@ -364,16 +361,15 @@ design and straightforward usability for applications in research and
 practice. Tensorforce is built on top of Google's TensorFlow framework
 and requires Python 3.
 
-
 \begin{itemize}
-\item Proximal Policy Optimization
-\item Trust-Region Policy Optimization
-\item Deterministic Policy Gradient
-\item Deep Q-Network
-\item Double DQN
-\item Dueling DQN
-\item Actor-Critic
-\item Advantage Actor-Critic
+	\item Proximal Policy Optimization
+	\item Trust-Region Policy Optimization
+	\item Deterministic Policy Gradient
+	\item Deep Q-Network
+	\item Double DQN
+	\item Dueling DQN
+	\item Actor-Critic
+	\item Advantage Actor-Critic
 \end{itemize}
 
 \subsection{Stable Baselines}
@@ -384,17 +380,17 @@ on OpenAI Baselines. It is focused on simplicity of use and
 consistency.
 
 \begin{itemize}
-\item Advantage Actor Critic
-\item Actor Critic with Experience Replay
-\item Actor Critic using Kronecker Factored Trust Region
-\item Deep Determenistic Policy Gradient
-\item Deep Q Learning
-\item Generative Adversarial Imitation Learning
-\item Hindsight Experience Relay
-\item Proximal Policy Optimization
-\item Soft Actor Critic
-\item Twin Delayed DDPG
-\item Trust Region Policy Optimization
+	\item Advantage Actor Critic
+	\item Actor Critic with Experience Replay
+	\item Actor Critic using Kronecker Factored Trust Region
+	\item Deep Determenistic Policy Gradient
+	\item Deep Q Learning
+	\item Generative Adversarial Imitation Learning
+	\item Hindsight Experience Relay
+	\item Proximal Policy Optimization
+	\item Soft Actor Critic
+	\item Twin Delayed DDPG
+	\item Trust Region Policy Optimization
 \end{itemize}
 
 \subsection{TF Agents}
@@ -403,15 +399,15 @@ TF-Agents~\cite{TFAgents} is a relatively new but up-and-coming tool, again, fro
 Google.  TF-Agents, while newer, is typically seen as more robust and
 mature. It is a framework designed for notebooks and that makes it
 perfect for trying out various configurations, hyperparameters, or
-environments. 
+environments.
 
 \begin{itemize}
-\item Deep Q Learning
-\item Double DQN
-\item Twin Delayed DDPG
-\item REINFORCE
-\item Proximal Policy Optimization
-\item Soft Actor Critic
+	\item Deep Q Learning
+	\item Double DQN
+	\item Twin Delayed DDPG
+	\item REINFORCE
+	\item Proximal Policy Optimization
+	\item Soft Actor Critic
 \end{itemize}
 
 \section{What challenges are there?}
@@ -553,13 +549,128 @@ most salient information~\cite{microsoft_research_2018}.
 
 \section{Use Cases}
 
-\todo{todo}
+\subsection{Resources Management in Computer Clusters}
 
-\section{Examples of use cases}
+Designing algorithms to allocate limited resources to different tasks
+is challenging and requires human-generated
+heuristics. In~\cite{mao2016resource} the authors showed how to use RL
+to automatically learn to allocate and schedule computer resources to
+waiting jobs, with the objective to minimize the average job slowdown.
 
-\todo{todo}
+They formulated the state space as the current resources allocation
+and the resources profile of jobs. For action space, they used a trick
+to allow the agent to choose more than one action at each time
+step. Reward was the sum of $-1/duration\_of\_the\_job$ over all the
+jobs in the system. Then they combined REINFORCE algorithm and
+baseline value to calculate the policy gradients and find the best
+policy parameters that give the probability distribution of actions to
+minimize the objective. See
+\href{https://github.com/hongzimao/deeprm}{this repository} for the
+implentation.
 
-\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+\subsection{Traffic Light Control}
+
+In~\cite{arel2010reinforcement}, researchers tried to design a traffic
+light controller to solve the congestion problem. Tested only on
+simulated environment though, their methods showed superior results
+than traditional methods and shed a light on the potential uses of
+multi-agent RL in designing traffic system.
+
+They put five agents in the five-intersection traffic network, with an
+agent at the central intersection to control traffic signaling. The
+state was defined as an eight-dimensional vector with each element
+representing the relative traffic flow of each lane. Eight choices
+were available to the agent, each representing a phase combination,
+and they defined the reward function as a reduction in the delay
+compared with earlier time step. The authors used DQN to learn the Q
+value of the {state, action} pairs.
+
+\subsection{Robotics}
+
+Robotics is an area where reinforcement learning has shown a lot of
+promise. A general survey can be found
+in~\cite{kober2013reinforcement}. In particular,~\cite{levine2016end}
+trained a robot to learn policies to map raw videno images to the
+robot’s actions. They fed the RGB images to a CNN and outputs were the
+motor torques. The RL component was the guided policy search to
+generate training data that came from its own state distribution.
+
+\subsection{Personalized Recommendations}
+
+Previous work of news recommendations faced several challenges
+including the changing dynamic of news, users get bored and Click
+Through Rate cannot show the retention rate of users. Guanjie et
+al.~have applied RL in news recommendation system to combat the
+problems in~\cite{zheng2018drn}.
+
+They constructed four categories of
+features:
+\begin{itemize}
+	\item User features
+	\item Context features as the state features of the environment
+	\item User-news features
+	\item News features as the action features.
+\end{itemize}
+
+The four features were input to the Deep Q-Network (DQN) to calculate
+the Q-value. The agent chose a list of news to recommend based on the
+Q-value, and the user’s click on the news was a part of the reward the
+RL agent received.
+
+\subsection{Bidding and Advertising}
+
+Researchers from Alibaba Group published~\cite{jin2018real} and
+claimed that their distributed cluster-based multi-agent bidding
+solution (DCMAB) has achieved promising results and thus they plan to
+conduct a live test in Taobao platform.
+
+Taobao ad platform is a place for merchants to place a bid
+to display ad to the customers. This could be a multi-agent problem
+because the merchants are bidding against each other and their actions
+are interrelated. In the paper, merchants and customers were clustered
+into different groups to reduce computational complexity. The state
+space of the agents showed the cost-revenue status of the agents,
+action space was the bid (continuous), and reward was the revenue
+caused by the customer cluster.
+
+\subsection{Games}
+
+RL is so well known these days because it is the mainstream algorithm
+used to solve different games and sometimes achieve superhuman
+performance.
+
+The most famous one must be AlphaGo~\cite{silver2016mastering} and
+AlphaGo Zero~\cite{silver2017alphago}. AlphaGo, trained with countless
+human games, already achieved superhuman performance by using value
+network and Monte Carlo tree search (MCTS) in its policy network. Yet,
+the researchers later on thought back and tried a purer RL approach —
+train it from scratch. The researchers let the new agent, AlphaGo
+Zero, played with itself and beat AlphaGo 100–0.
+
+\subsection{Deep Learning}
+
+More and more attempts to combine RL and other deep learning
+architecture can be seen, and they showed impressive results.
+
+One of the most influential work in RL is the pioneering work of
+DeepMind to combine CNN with RL~\cite{minh_dqn}. By doing so, the
+agent can “see” the environment through high-dimensional sensory and
+then learn to interact with it.
+
+RL and RNN is another combinations people used to try a novel
+idea. RNN is a neural network that has “memories”. When joint with RL,
+RNN gives the agents’ ability to memorize things. For
+example,~\cite{hausknecht_2015} joint LSTM with RL to create Deep
+Recurrent Q-Network (DRQN) to play Atari 2600
+games. In~\cite{zhou2017optimizing} the authors also used RNN and RL
+to solve chemical reaction optimization problem.
+
+DeepMind showed~\cite{ganin_2018} how to use generative models and RL to generate
+programs. In the model, the adversarially trained agent used the
+signal as rewards to improve the actions, instead of propagating the
+gradients to the input space as in the GAN training.
+
+\addtolength{\textheight}{-12.5cm}   % This command serves to balance the column lengths
 % on the last page of the document manually. It shortens
 % the textheight of the last page by a suitable amount.
 % This command does not take effect until the next page
