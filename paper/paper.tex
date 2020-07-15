@@ -394,9 +394,71 @@ Other algorithms include:
 
 \section{Which library or frameworks are the most relevant today?}
 
-\subsection{KerasRL}
+\subsection{TF Agents~\cite{TFAgents}}
 
-keras-rl\cite{plappert2016kerasrl} implements some state-of-the art deep reinforcement learning
+TF-Agents is a relatively new but up-and-coming tool, again, from
+Google.  TF-Agents, while newer, is typically seen as more robust and
+mature. It is a framework designed for notebooks and that makes it
+perfect for trying out various configurations, hyperparameters, or
+environments.
+
+\begin{itemize}
+	\item Deep Q Learning
+	\item Double DQN
+	\item Twin Delayed DDPG
+	\item REINFORCE
+	\item Proximal Policy Optimization
+	\item Soft Actor Critic
+\end{itemize}
+
+\subsection{RLlib~\cite{liang2018rllib}}
+
+RLlib is an open-source library for reinforcement learning that offers
+both high scalability and a unified API for a variety of
+applications. RLlib natively supports TensorFlow, TensorFlow Eager,
+and PyTorch, but most of its internals are framework agnostic.
+
+\begin{itemize}
+\item  Distributed Prioritized Experience Replay (Ape-X)
+\item  Importance Weighted Actor-Learner Architecture (IMPALA)
+\item  Asynchronous Proximal Policy Optimization (APPO)
+\item  Decentralized Distributed Proximal Policy Optimization (DD-PPO)
+\item  Single-Player AlphaZero (contrib/AlphaZero)
+\item  Advantage Actor-Critic (A2C, A3C)
+\item  Deep Deterministic Policy Gradients (DDPG, TD3)
+\item  Deep Q Networks (DQN, Rainbow, Parametric DQN)
+\item  Proximal Policy Optimization (PPO)
+\item  Soft Actor Critic (SAC)
+\item  Augmented Random Search (ARS)
+\item  QMIX Monotonic Value Factorisation (QMIX, VDN, IQN)
+\item  Multi-Agent Deep Deterministic Policy Gradient (contrib/MADDPG)
+\item  Advantage Re-Weighted Imitation Learning (MARWIL)
+\item  Linear Upper Confidence Bound (contrib/LinUCB)
+\item  Linear Thompson Sampling (contrib/LinTS)
+\end{itemize}
+
+\subsection{SLM Lab~\cite{kenggraesser2017slmlab}}
+
+SLM Lab is a software framework for reproducible reinforcement
+learning research. It enables easy development of RL algorithms using
+modular components and file-based configuration. It also enables
+flexible experimentation completed with hyperparameter search, result
+analysis and benchmark results.
+
+\begin{itemize}
+\item SARSA
+\item DQN (Deep Q-Network)
+\item Double-DQN, Dueling-DQN, PER (Prioritized Experience Replay)
+\item REINFORCE
+\item A2C (Advantage Actor-Critic) with GAE \& n-step
+\item PPO (Proximal Policy Optimization)
+\item SAC (Soft Actor-Critic)
+\item SIL (Self Imitation Learning)
+\end{itemize}
+
+\subsection{KerasRL~\cite{plappert2016kerasrl}}
+
+keras-rl implements some state-of-the art deep reinforcement learning
 algorithms in Python and seamlessly integrates with the deep learning
 library Keras.
 
@@ -415,9 +477,9 @@ Implements the following algorithms:
 	\item Deep SARSA
 \end{itemize}
 
-\subsection{Tensorforce}
+\subsection{Tensorforce~\cite{tensorforce}}
 
-Tensorforce~\cite{tensorforce} is an open-source deep reinforcement
+Tensorforce is an open-source deep reinforcement
 learning framework, with an emphasis on modularized flexible library
 design and straightforward usability for applications in research and
 practice. Tensorforce is built on top of Google's TensorFlow framework
@@ -434,9 +496,9 @@ and requires Python 3.
 	\item Advantage Actor-Critic
 \end{itemize}
 
-\subsection{Stable Baselines}
+\subsection{Stable Baselines~\cite{stable-baselines}}
 
-Stable Baselines~\cite{stable-baselines}, a set of implementations of
+Stable Baselines, a set of implementations of
 Reinforcement Learning (RL) algorithms with a common interface, based
 on OpenAI Baselines. It is focused on simplicity of use and
 consistency.
@@ -453,23 +515,6 @@ consistency.
 	\item Soft Actor Critic
 	\item Twin Delayed DDPG
 	\item Trust Region Policy Optimization
-\end{itemize}
-
-\subsection{TF Agents}
-
-TF-Agents~\cite{TFAgents} is a relatively new but up-and-coming tool, again, from
-Google.  TF-Agents, while newer, is typically seen as more robust and
-mature. It is a framework designed for notebooks and that makes it
-perfect for trying out various configurations, hyperparameters, or
-environments.
-
-\begin{itemize}
-	\item Deep Q Learning
-	\item Double DQN
-	\item Twin Delayed DDPG
-	\item REINFORCE
-	\item Proximal Policy Optimization
-	\item Soft Actor Critic
 \end{itemize}
 
 \section{What challenges are there?}
@@ -732,7 +777,7 @@ programs. In the model, the adversarially trained agent used the
 signal as rewards to improve the actions, instead of propagating the
 gradients to the input space as in the GAN training.
 
-\addtolength{\textheight}{-9.5cm}   % This command serves to balance the column lengths
+\addtolength{\textheight}{-17cm}   % This command serves to balance the column lengths
 % on the last page of the document manually. It shortens
 % the textheight of the last page by a suitable amount.
 % This command does not take effect until the next page
